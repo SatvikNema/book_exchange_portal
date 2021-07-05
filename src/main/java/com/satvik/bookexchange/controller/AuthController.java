@@ -10,16 +10,14 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthController {
@@ -48,6 +46,7 @@ public class AuthController {
     }
 
     @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> getAdmin(){
         String response = "admin";
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -56,7 +55,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user){
         String response = "recieved";
-        System.out.println(user.getEmail()+" "+user.getDob()+" heheh "+user.getCreated());
         authService.register(user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -76,6 +74,15 @@ public class AuthController {
         final String token = jwtUtil.generateToken(userDetails);
         AuthenticationResponse response = new AuthenticationResponse(token);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/setRole/{email}/{role}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> setRole(@PathVariable String email, @PathVariable String role){
+        String response = "new role assinged!";
+        System.out.println("allowed!");
+        authService.setRole(email, role);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
 
 }
