@@ -1,12 +1,10 @@
 package com.satvik.bookexchange.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,4 +37,18 @@ public class User {
             joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")})
     private Set<Role> roles;
+
+    @OneToMany(cascade=CascadeType.MERGE,
+            fetch = FetchType.LAZY,
+            mappedBy = "user")
+    Set<UserXCommunity> userXCommunities;
+
+    @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "USER_BOOK",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "book_id", referencedColumnName = "id")}
+    )
+    private Set<Book> booksOwned;
+
 }

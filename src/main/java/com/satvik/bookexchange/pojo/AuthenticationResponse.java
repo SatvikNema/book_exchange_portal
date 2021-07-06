@@ -1,7 +1,5 @@
 package com.satvik.bookexchange.pojo;
 
-import lombok.Builder;
-
 public class AuthenticationResponse {
 
     private String jwtToken;
