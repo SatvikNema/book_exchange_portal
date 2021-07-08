@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class CommunityService {
@@ -47,5 +48,9 @@ public class CommunityService {
         user.getUserXCommunities().add(userXCommunity);
         System.out.println("adding "+user.getEmail()+" to "+community.getName());
         return userRepository.save(user);
+    }
+
+    public List<Community> getAllCommunities() {
+        return communityRepository.findAll();
     }
 }

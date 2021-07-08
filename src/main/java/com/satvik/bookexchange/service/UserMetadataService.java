@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -20,7 +21,7 @@ public class UserMetadataService {
     @Autowired
     private BookRepository bookRepository;
 
-    public void fetchAllBooks(int user_id) {
+    public Set<Book> fetchAllBooks(int user_id) {
         log.info("-----------------------------------------");
         User user = userRepository.findById(user_id).get();
         log.info("--------------User's Books--------------");
@@ -31,6 +32,7 @@ public class UserMetadataService {
         } else {
             log.info("No books owned by the user!");
         }
+        return user.getBooksOwned();
     }
 
     public User addOwnedBook(int user_id, int book_id) {

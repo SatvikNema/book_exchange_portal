@@ -1,10 +1,12 @@
 package com.satvik.bookexchange.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
@@ -13,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 public class Book {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -21,6 +24,7 @@ public class Book {
     private String description;
     private String isbn;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "booksOwned")
     private Set<User> usersOwners;
 }
