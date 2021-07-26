@@ -2,7 +2,6 @@ package com.satvik.bookexchange.controller;
 
 import com.satvik.bookexchange.entity.Community;
 import com.satvik.bookexchange.pojo.CommunityResponse;
-import com.satvik.bookexchange.repository.CommunityRepository;
 import com.satvik.bookexchange.service.CommunityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
