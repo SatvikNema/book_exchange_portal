@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.SocketAddress;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -90,5 +91,18 @@ public class MemcachedService {
 
         System.out.println("number of keys: "+keyNames.size());
         return keyNames;
+    }
+
+    public void flushData() {
+        try {
+            memcachedClient.flush().get();
+        } catch(ExecutionException | InterruptedException e){
+            log.info("something went wrong while flushing...");
+        }
+    }
+
+    public Object getValue(String key) {
+        log.info("key: {}", key);
+        return memcachedClient.get(key);
     }
 }

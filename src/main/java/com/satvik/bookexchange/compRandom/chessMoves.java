@@ -1,4 +1,4 @@
-package com.satvik.bookexchange;
+package com.satvik.bookexchange.compRandom;
 
 import java.util.*;
 
