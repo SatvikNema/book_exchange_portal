@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name="USERS", schema="dbo")
+@Table(name="USER", schema="dbo")
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -31,17 +31,19 @@ public class User {
     @Column(name="acc_verified")
     private Boolean accVerified;
 
-    @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(
-            name="role_user",
+            name="USER_ROLE",
             joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")})
     private Set<Role> roles;
 
-    @OneToMany(cascade=CascadeType.MERGE,
-            fetch = FetchType.LAZY,
-            mappedBy = "user")
-    Set<UserXCommunity> userXCommunities;
+    @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinTable(
+            name="USER_COMMUNITY",
+            joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name="community_id", referencedColumnName="id")})
+    Set<Community> userCommunities;
 
     @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinTable(

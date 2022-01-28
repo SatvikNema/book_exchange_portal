@@ -22,7 +22,7 @@ public class CommunityController {
     @GetMapping("community/{id}/assign/{user_id}")
     public ResponseEntity<String> assignUserToCommunity(@PathVariable("id") int community_id,
                                                         @PathVariable int user_id){
-        communityService.assignUserToCommunity(community_id, user_id);
+//        communityService.assignUserToCommunity(community_id, user_id);
         String response = "assigned!";
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
