@@ -24,7 +24,6 @@ public class Book {
     private String description;
     private String isbn;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "booksOwned")
-    private Set<User> usersOwners;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "book")
+    private Set<UserXBook> usersOwners;
 }

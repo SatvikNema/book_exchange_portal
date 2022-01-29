@@ -20,6 +20,8 @@ public class User {
 
     private String name;
 
+    private String username;
+
     private String password;
 
     private String mobile;
@@ -38,19 +40,10 @@ public class User {
             inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")})
     private Set<Role> roles;
 
-    @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinTable(
-            name="USER_COMMUNITY",
-            joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="community_id", referencedColumnName="id")})
-    Set<Community> userCommunities;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    Set<UserXCommunity> userXCommunities;
 
-    @ManyToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "USER_BOOK",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "book_id", referencedColumnName = "id")}
-    )
-    private Set<Book> booksOwned;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<UserXBook> userXBooks;
 
 }

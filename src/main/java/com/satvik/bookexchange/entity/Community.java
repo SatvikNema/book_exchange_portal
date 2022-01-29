@@ -37,6 +37,6 @@ public class Community {
     @Column(name="num_users")
     private int numUsers;
 
-    @ManyToMany(mappedBy = "userCommunities")
-    Set<User> users;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "community")
+    Set<UserXCommunity> userXCommunities;
 }

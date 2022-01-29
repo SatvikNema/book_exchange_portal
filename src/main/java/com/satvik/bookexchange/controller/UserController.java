@@ -1,7 +1,9 @@
 package com.satvik.bookexchange.controller;
 
 import com.satvik.bookexchange.entity.Book;
+import com.satvik.bookexchange.entity.User;
 import com.satvik.bookexchange.pojo.BookResponse;
+import com.satvik.bookexchange.pojo.UserDto;
 import com.satvik.bookexchange.service.UserMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,5 +43,10 @@ public class UserController {
         String response = "added book!";
         userMetadataService.addOwnedBook(user_id, book_id);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    public List<UserDto> getUsers(){
+        return userMetadataService.getAllUsers();
     }
 }

@@ -2,14 +2,18 @@ package com.satvik.bookexchange.service;
 
 import com.satvik.bookexchange.entity.Book;
 import com.satvik.bookexchange.entity.User;
+import com.satvik.bookexchange.pojo.UserDto;
 import com.satvik.bookexchange.repository.BookRepository;
 import com.satvik.bookexchange.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,6 +24,9 @@ public class UserMetadataService {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public Set<Book> fetchAllBooks(int user_id) {
         log.info("-----------------------------------------");
@@ -43,5 +50,16 @@ public class UserMetadataService {
         }
         user.getBooksOwned().add(book);
         return userRepository.save(user);
+    }
+
+    public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::convertUserToDto)
+                .collect(Collectors.toList());
+    }
+
+    private UserDto convertUserToDto(User user){
+        return modelMapper.map(user, UserDto.class);
     }
 }
