@@ -2,15 +2,26 @@ package com.satvik.bookexchange.service;
 
 import com.satvik.bookexchange.entity.Community;
 import com.satvik.bookexchange.entity.User;
+import com.satvik.bookexchange.entity.UserXCommunity;
+import com.satvik.bookexchange.pojo.CommunityAddRequest;
+import com.satvik.bookexchange.pojo.CommunityDto;
 import com.satvik.bookexchange.repository.CommunityRepository;
 import com.satvik.bookexchange.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.xml.ws.Response;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CommunityService {
 
     @Autowired
@@ -19,37 +30,86 @@ public class CommunityService {
     @Autowired
     private CommunityRepository communityRepository;
 
-//    public User assignUserToCommunity(int community_id, int user_id) {
-//        System.out.println("----------------------------------------------------------");
-//        User user = userRepository.findById(user_id).get();
-//        System.out.println("----------------------------------------------------------");
-//        Community community = communityRepository.findById(community_id).get();
-//
-//        if(user.getUserXCommunities() == null){
-//            user.setUserXCommunities(new HashSet<>());
-//        }
-//
-//        user.getUserXCommunities().forEach((entry) -> {
-//                Community userCommunity = entry.getCommunity();
-//                System.out.println("community: "+userCommunity.getName());
-//                if (userCommunity.getId() == community_id) {
-//                    System.out.println("User is already a member of " + userCommunity.getName());
-//                    return;
-//                }
-//        });
-//
-//        UserXCommunity userXCommunity = UserXCommunity.builder()
-//                .community(community)
-//                .user(user)
-//                .userRole("USER")
-//                .build();
-//
-//        user.getUserXCommunities().add(userXCommunity);
-//        System.out.println("adding "+user.getEmail()+" to "+community.getName());
-//        return userRepository.save(user);
-//    }
+    @Autowired
+    private ModelMapper modelMapper;
+
+    // todo add pre auth check so that only the creator/admin of the community can call this
+    public ResponseEntity<?> assignUserToCommunity(int community_id, int user_id) {
+        User user = userRepository.findById(user_id).orElseThrow(NoSuchElementException::new);
+        Community community = communityRepository.findById(community_id).orElseThrow(NoSuchElementException::new);
+
+        if(user.getUserXCommunities() == null){
+            user.setUserXCommunities(new HashSet<>());
+        }
+
+        for(UserXCommunity entry: user.getUserXCommunities()){
+            Community userCommunity = entry.getCommunity();
+            if (userCommunity.getId() == community_id) {
+                log.info("user {} already member of {}", user.getEmail(), community.getName());
+                return new ResponseEntity<>("User already part of the community", HttpStatus.CONFLICT);
+            }
+        }
+
+        UserXCommunity userXCommunity = UserXCommunity.builder()
+                .community(community)
+                .user(user)
+                .userRole("USER")
+                .build();
+
+        user.getUserXCommunities().add(userXCommunity);
+        userRepository.save(user);
+        log.info("adding {} to {}", user.getEmail(), community.getName());
+        return new ResponseEntity<>("Added", HttpStatus.OK);
+    }
 
     public List<Community> getAllCommunities() {
         return communityRepository.findAll();
+    }
+
+    public CommunityDto addCommunity(CommunityAddRequest communityAddRequest) {
+        Community community = Community.builder()
+                .city(communityAddRequest.getCity())
+                .country(communityAddRequest.getCountry())
+                .creator_id(communityAddRequest.getCreatorId())
+                .latitude(communityAddRequest.getLatitude())
+                .longitude(communityAddRequest.getLongitude())
+                .name(communityAddRequest.getName())
+                .state(communityAddRequest.getState())
+                .numUsers(1)
+                .userXCommunities(new HashSet<>())
+                .posts(new HashSet<>())
+                .build();
+
+        Community savedCommunity = communityRepository.save(community);
+
+        User author = userRepository.findById(communityAddRequest.getCreatorId()).orElseThrow(NoSuchElementException::new);
+        UserXCommunity userXCommunity = UserXCommunity.builder()
+                .user(author)
+                .community(savedCommunity)
+                .userRole("CREATOR")
+                .build();
+        if(author.getUserXCommunities() == null){
+            author.setUserXCommunities(new HashSet<UserXCommunity>(){{add(userXCommunity);}});
+        } else {
+            author.getUserXCommunities().add(userXCommunity);
+        }
+
+        User userSaved = userRepository.save(author);
+        userSaved.getUserXCommunities().forEach(e -> System.out.println(e.getCommunity().getName()));
+        return communityToDto(community);
+    }
+
+    public ResponseEntity<?> removeFromCommunity(int community_id, int user_id){
+        User user = userRepository.findById(user_id).orElseThrow(NoSuchElementException::new);
+        Community community = communityRepository.findById(community_id).orElseThrow(NoSuchElementException::new);
+
+        UserXCommunity mappingToDelete = user.getUserXCommunities().stream().filter(e -> e.getCommunity().equals(community)).findFirst().orElseThrow(NoSuchElementException::new);
+        user.getUserXCommunities().remove(mappingToDelete);
+        userRepository.save(user);
+        return new ResponseEntity<>("Removed user from community", HttpStatus.OK);
+    }
+
+    private CommunityDto communityToDto(Community community){
+        return modelMapper.map(community, CommunityDto.class);
     }
 }

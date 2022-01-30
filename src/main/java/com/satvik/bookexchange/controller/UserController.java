@@ -41,12 +41,17 @@ public class UserController {
     public ResponseEntity<String> addOwnedBookToUser(@PathVariable("id") int user_id,
                                                     @PathVariable int book_id){
         String response = "added book!";
-        userMetadataService.addOwnedBook(user_id, book_id);
+//        userMetadataService.addOwnedBook(user_id, book_id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/users")
     public List<UserDto> getUsers(){
         return userMetadataService.getAllUsers();
+    }
+
+    @GetMapping("/users/{id}")
+    public UserDto getUser(@PathVariable("id") int userId){
+        return userMetadataService.getUser(userId);
     }
 }

@@ -28,7 +28,7 @@ public class User {
 
     private Date dob;
 
-    private Date created = new Date();
+    private Date created;
 
     @Column(name="acc_verified")
     private Boolean accVerified;
@@ -40,10 +40,13 @@ public class User {
             inverseJoinColumns={@JoinColumn(name="role_id", referencedColumnName="id")})
     private Set<Role> roles;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    Set<UserXCommunity> userXCommunities;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<UserXCommunity> userXCommunities;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner")
     private Set<UserXBook> userXBooks;
+
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "creator")
+    private Set<Post> posts;
 
 }

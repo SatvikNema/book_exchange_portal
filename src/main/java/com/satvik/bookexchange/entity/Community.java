@@ -1,9 +1,6 @@
 package com.satvik.bookexchange.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -15,6 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "COMMUNITY", schema = "dbo")
+@Builder
 public class Community {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -24,9 +22,9 @@ public class Community {
 
     private int creator_id;
 
-    private BigDecimal latitude;
+    private Double latitude;
 
-    private BigDecimal longitude;
+    private Double longitude;
 
     private String city;
 
@@ -37,6 +35,9 @@ public class Community {
     @Column(name="num_users")
     private int numUsers;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "community")
-    Set<UserXCommunity> userXCommunities;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "community")
+    private Set<UserXCommunity> userXCommunities;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "community")
+    private Set<Post> posts;
 }

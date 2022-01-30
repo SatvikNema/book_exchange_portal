@@ -34,13 +34,19 @@ create table BOOK(
     primary key(id)
 );
 
+create table ROLE(
+	id int not null auto_increment,
+    role_name varchar(50) not null,
+    primary key(id)
+);
+
 create table USER_BOOK(
 	id int not null auto_increment,
     user_id int not null,
     book_id int not null,
     user_book_category varchar(100),
-    FOREIGN KEY (user_id) REFERENCES USER(id),
-    FOREIGN KEY (book_id) REFERENCES BOOK(id),
+    FOREIGN KEY (user_id) REFERENCES USER(id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES BOOK(id) ON DELETE CASCADE,
     primary key(id)
 );
 
@@ -49,14 +55,8 @@ create table USER_COMMUNITY(
     user_id int not null,
     community_id int not null,
     user_role varchar(20),
-    FOREIGN KEY (user_id) REFERENCES USER(id),
-    FOREIGN KEY (community_id) REFERENCES COMMUNITY(id),
-    primary key(id)
-);
-
-create table ROLE(
-	id int not null auto_increment,
-    role_name varchar(50) not null,
+    FOREIGN KEY (user_id) REFERENCES USER(id) ON DELETE CASCADE,
+    FOREIGN KEY (community_id) REFERENCES COMMUNITY(id) ON DELETE CASCADE,
     primary key(id)
 );
 
@@ -64,8 +64,8 @@ create table USER_ROLE(
 	id int not null auto_increment,
     role_id int not null default 3, --3 is role id for USER role
     user_id int not null,
-    FOREIGN KEY (user_id) REFERENCES USER(id),
-    FOREIGN KEY (role_id) REFERENCES ROLE(id),
+    FOREIGN KEY (user_id) REFERENCES USER(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES ROLE(id) ON DELETE CASCADE,
     primary key(id)
 );
 
@@ -77,8 +77,8 @@ create table POST(
     type varchar(100),
     description text,
     created datetime default now(),
-    FOREIGN KEY (creator_id) REFERENCES USER(id),
-    FOREIGN KEY (community_id) REFERENCES COMMUNITY(id),
+    FOREIGN KEY (creator_id) REFERENCES USER(id) ON DELETE SET NULL,
+    FOREIGN KEY (community_id) REFERENCES COMMUNITY(id) ON DELETE SET NULL,
     primary key(id)
 );
 

@@ -1,9 +1,16 @@
 package com.satvik.bookexchange.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "USER_BOOK")
+@NoArgsConstructor
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
 public class UserXBook {
 
     @Id
@@ -16,7 +23,7 @@ public class UserXBook {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User owner;
 
     @Column(name = "user_book_category")
     private String userBookCategory;

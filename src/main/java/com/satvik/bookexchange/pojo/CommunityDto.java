@@ -5,28 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class CommunityResponse {
-    private Integer id;
-
+public class CommunityDto {
     private String name;
-
-    private int creator_id;
-
     private Double latitude;
-
     private Double longitude;
-
     private String city;
-
     private String state;
-
     private String country;
-
     private int numUsers;
 }
