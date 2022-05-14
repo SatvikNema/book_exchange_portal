@@ -13,7 +13,7 @@ create table USER(
 
 create table COMMUNITY(
 	id int not null auto_increment,
-    name int,
+    name varchar(100),
     creator_id varchar(100),
     latitude decimal(9,5),
     longitude decimal(9,5),
@@ -62,7 +62,7 @@ create table USER_COMMUNITY(
 
 create table USER_ROLE(
 	id int not null auto_increment,
-    role_id int not null default 3, --3 is role id for USER role
+    role_id int not null default 3,
     user_id int not null,
     FOREIGN KEY (user_id) REFERENCES USER(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES ROLE(id) ON DELETE CASCADE,
@@ -96,7 +96,9 @@ insert into USER
 INSERT INTO COMMUNITY
 (name, creator_id, latitude, longitude, city, state, country, num_users) values
 ("Kharghar Sector 10 community", 1, 19.0473, 73.0699, 'Kharghar', 'Maharashtra', 'India', 1),
-("Delhi community", 3, 28.7041, 77.1025, 'Mustafabad', 'Delhi', 'India', 1);
+("Delhi community", 3, 28.7041, 77.1025, 'Mustafabad', 'Delhi', 'India', 1),
+("Punjab readers", 4, 31.1471, 75.3412, 'somewhere in punjab', 'Punjab', 'India', 1),
+("Marathalli readers", 1, 12.9569, 77.7011, 'Bangalore', 'Karnataka', 'India', 1);
 
 INSERT INTO BOOK
 (title, author, isbn, category, description) values

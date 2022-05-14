@@ -14,11 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.xml.ws.Response;
+import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -34,9 +34,10 @@ public class CommunityService {
     private ModelMapper modelMapper;
 
     // todo add pre auth check so that only the creator/admin of the community can call this
-    public ResponseEntity<?> assignUserToCommunity(int community_id, int user_id) {
-        User user = userRepository.findById(user_id).orElseThrow(NoSuchElementException::new);
-        Community community = communityRepository.findById(community_id).orElseThrow(NoSuchElementException::new);
+    @Transactional
+    public ResponseEntity<String> assignUserToCommunity(int communityId, int userId) {
+        User user = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
+        Community community = communityRepository.findById(communityId).orElseThrow(NoSuchElementException::new);
 
         if(user.getUserXCommunities() == null){
             user.setUserXCommunities(new HashSet<>());
@@ -44,7 +45,7 @@ public class CommunityService {
 
         for(UserXCommunity entry: user.getUserXCommunities()){
             Community userCommunity = entry.getCommunity();
-            if (userCommunity.getId() == community_id) {
+            if (userCommunity.getId() == communityId) {
                 log.info("user {} already member of {}", user.getEmail(), community.getName());
                 return new ResponseEntity<>("User already part of the community", HttpStatus.CONFLICT);
             }
@@ -89,19 +90,22 @@ public class CommunityService {
                 .userRole("CREATOR")
                 .build();
         if(author.getUserXCommunities() == null){
-            author.setUserXCommunities(new HashSet<UserXCommunity>(){{add(userXCommunity);}});
+            Set<UserXCommunity> communityMap = new HashSet<>();
+            communityMap.add(userXCommunity);
+            author.setUserXCommunities(communityMap);
         } else {
             author.getUserXCommunities().add(userXCommunity);
         }
 
         User userSaved = userRepository.save(author);
-        userSaved.getUserXCommunities().forEach(e -> System.out.println(e.getCommunity().getName()));
+        userSaved.getUserXCommunities().forEach(e -> log.info("User {} community {}", userSaved.getId(), e.getCommunity().getName()));
         return communityToDto(community);
     }
 
-    public ResponseEntity<?> removeFromCommunity(int community_id, int user_id){
-        User user = userRepository.findById(user_id).orElseThrow(NoSuchElementException::new);
-        Community community = communityRepository.findById(community_id).orElseThrow(NoSuchElementException::new);
+    @Transactional
+    public ResponseEntity<String> removeFromCommunity(int communityId, int userId){
+        User user = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
+        Community community = communityRepository.findById(communityId).orElseThrow(NoSuchElementException::new);
 
         UserXCommunity mappingToDelete = user.getUserXCommunities().stream().filter(e -> e.getCommunity().equals(community)).findFirst().orElseThrow(NoSuchElementException::new);
         user.getUserXCommunities().remove(mappingToDelete);

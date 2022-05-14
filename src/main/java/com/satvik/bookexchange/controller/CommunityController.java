@@ -19,23 +19,23 @@ public class CommunityController {
     @Autowired
     private CommunityService communityService;
 
-    @GetMapping("community/{id}/assign/user/{user_id}")
-    public ResponseEntity<?> assignUserToCommunity(@PathVariable("id") int community_id,
-                                                        @PathVariable int user_id){
-        return communityService.assignUserToCommunity(community_id, user_id);
+    @GetMapping("community/{id}/assign/user/{userId}")
+    public ResponseEntity<String> assignUserToCommunity(@PathVariable("id") int communityId,
+                                                        @PathVariable int userId){
+        return communityService.assignUserToCommunity(communityId, userId);
     }
 
-    @GetMapping("community/{id}/remove/user/{user_id}")
-    public ResponseEntity<?> removeUserFromCommunity(@PathVariable("id") int community_id,
-                                                   @PathVariable int user_id){
-        return communityService.removeFromCommunity(community_id, user_id);
+    @GetMapping("community/{id}/remove/user/{userId}")
+    public ResponseEntity<String> removeUserFromCommunity(@PathVariable("id") int communityId,
+                                                   @PathVariable int userId){
+        return communityService.removeFromCommunity(communityId, userId);
     }
 
     @GetMapping("/communities")
     public ResponseEntity<List<CommunityResponse>> getCommunities(){
         List<Community> result = communityService.getAllCommunities();
         List<CommunityResponse> response = new ArrayList<>();
-        result.forEach(community -> {
+        result.forEach(community ->
             response.add(CommunityResponse.builder()
                     .id(community.getId())
                     .name(community.getName())
@@ -46,8 +46,8 @@ public class CommunityController {
                     .longitude(community.getLongitude())
                     .numUsers(community.getNumUsers())
                     .state(community.getState())
-                    .build());
-        });
+                    .build())
+        );
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
